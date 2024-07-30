@@ -51,4 +51,4 @@ const viewAllUsers = async (req, res) => {
   };
 
 
-module.exports = {createUser,deleteUser, updateUser, viewAllUsers} 
+module.exports = {createUser,deleteUser, updateUser, viewAllUsers}  

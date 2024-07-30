@@ -5,7 +5,7 @@ info:
   description: API for managing tickets and users in a ticket management system.
 
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:5000/api
     description: Local server
 
 components:
@@ -40,21 +40,19 @@ components:
           type: string
           example: "open"
         created_by:
-          type: object
-          example: 60c72b2f9b1e8a3d4c8e5a9e
+          type: string
+          example: "60c72b2f9b1e8a3d4c8e5a9e"
         assignedTo:
-          type: object
-          example: 60c72b2f9b1e8a3d4c8e5a9e
+          type: string
+          example: "60c72b2f9b1e8a3d4c8e5a9e"
 
 security:
   - BearerAuth: []
 
 paths:
-   /login:
+  /login:
     post:
-      summary: logs into their account
-      security:
-        - BearerAuth: []
+      summary: Logs into the account
       requestBody:
         required: true
         content:
@@ -69,25 +67,23 @@ paths:
                   type: string
                 password:
                   type: string
-
       responses:
         '200':
-          description: logged in successfully
+          description: Logged in successfully
           content:
             application/json:
               schema:
-                $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '404':
           description: No user is associated with this account
         '400':
-          description: invalid credentials
+          description: Invalid credentials
         '500':
           description: Server error
-   /register:
+
+  /register:
     post:
-      summary: register an account
-      security:
-        - BearerAuth: []
+      summary: Register an account
       requestBody:
         required: true
         content:
@@ -102,16 +98,15 @@ paths:
                   type: string
                 password:
                   type: string
-
       responses:
         '200':
-          description: registered successfully
+          description: Registered successfully
           content:
             application/json:
               schema:
-                $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '400':
-          description: email and password is required
+          description: Email and password are required
         '500':
           description: Server error
 
@@ -127,10 +122,13 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
         '500':
           description: Server error
+
   /users/create:
     post:
       summary: Create a new user
@@ -145,6 +143,7 @@ paths:
               required:
                 - email
                 - password
+                - role
               properties:
                 email:
                   type: string
@@ -154,14 +153,14 @@ paths:
                   example: "password123"
                 role:
                   type: string
-                  example: user/auth/support
+                  example: "user"
       responses:
         '201':
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/db/model/Users'
+                $ref: '#/components/schemas/User'
         '400':
           description: Bad request
         '401':
@@ -179,8 +178,8 @@ paths:
           in: path
           required: true
           schema:
-            type: object
-            example: 60c72b2f9b1e8a3d4c8e5a9e
+            type: string
+            example: "60c72b2f9b1e8a3d4c8e5a9e"
       requestBody:
         required: true
         content:
@@ -220,10 +219,10 @@ paths:
           required: true
           schema:
             type: string
-            example: 60c72b2f9b1e8a3d4c8e5a9e
+            example: "60c72b2f9b1e8a3d4c8e5a9e"
       responses:
         '200':
-          description: Deletes a user
+          description: User deleted successfully
           content:
             application/json:
               schema:
@@ -252,7 +251,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/db/models/ticket'
+                  $ref: '#/components/schemas/Ticket'
         '401':
           description: Unauthorized
         '500':
@@ -285,26 +284,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/db/models/ticket'
+                $ref: '#/components/schemas/Ticket'
         '400':
           description: Bad request
         '401':
           description: Unauthorized
         '500':
           description: Server error
- 
+
   /tickets/all:
     get:
-      summary: Get all crated tickets
+      summary: Get all tickets
       security:
         - BearerAuth: []
       responses:
         '200':
-          description: responds with all tickets
+          description: Responds with all tickets
           content:
             application/json:
               schema:
-                $ref: '#/db/models/ticket'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
         '401':
           description: Unauthorized
         '404':
@@ -323,14 +324,14 @@ paths:
           required: true
           schema:
             type: string
-            example: 60c72b2f9b1e8a3d4c8e5a9f
+            example: "60c72b2f9b1e8a3d4c8e5a9f"
       responses:
         '200':
           description: Ticket details
           content:
             application/json:
               schema:
-                $ref: '#/db/models/ticket'
+                $ref: '#/components/schemas/Ticket'
         '401':
           description: Unauthorized
         '404':
@@ -348,7 +349,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 60c72b2f9b1e8a3d4c8e5a9f
+            example: "60c72b2f9b1e8a3d4c8e5a9f"
       requestBody:
         required: true
         content:
@@ -391,7 +392,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 60c72b2f9b1e8a3d4c8e5a9f
+            example: "60c72b2f9b1e8a3d4c8e5a9f"
       responses:
         '200':
           description: Ticket deleted successfully
@@ -421,7 +422,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 60c72b2f9b1e8a3d4c8e5a9f
+            example: "60c72b2f9b1e8a3d4c8e5a9f"
       requestBody:
         required: true
         content:
@@ -433,14 +434,14 @@ paths:
               properties:
                 userId:
                   type: string
-                  example: 60c72b2f9b1e8a3d4c8e5a9e
+                  example: "60c72b2f9b1e8a3d4c8e5a9e"
       responses:
         '200':
           description: Ticket assigned successfully
           content:
             application/json:
               schema:
-                $ref: '#/db/models/ticket'
+                $ref: '#/components/schemas/Ticket'
         '400':
           description: Bad request
         '401':
