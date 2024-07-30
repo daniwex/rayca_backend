@@ -19,7 +19,6 @@ app.use(express.json());
 app.use(cors());
 app.use(xss());
 
-const cors = require('cors');
 
 app.use(cors({
   origin: 'https://rayca-backend.vercel.app/',
