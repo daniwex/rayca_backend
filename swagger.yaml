@@ -40,10 +40,10 @@ components:
           type: string
           example: "open"
         created_by:
-          type: string
+          type: object
           example: "60c72b2f9b1e8a3d4c8e5a9e"
         assignedTo:
-          type: string
+          type: object
           example: "60c72b2f9b1e8a3d4c8e5a9e"
 
 security:
@@ -73,7 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '404':
           description: No user is associated with this account
         '400':
@@ -104,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '400':
           description: Email and password are required
         '500':
@@ -123,7 +123,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
         '500':
@@ -160,7 +160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/db/models/Users'
+                $ref: '#/components/schemas/User'
         '400':
           description: Bad request
         '401':
@@ -251,7 +251,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/db/models/ticket'
+                  $ref: '#/components/schemas/Ticket'
         '401':
           description: Unauthorized
         '500':
@@ -305,7 +305,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/db/models/ticket'
+                  $ref: '#/components/schemas/Ticket'
         '401':
           description: Unauthorized
         '404':
