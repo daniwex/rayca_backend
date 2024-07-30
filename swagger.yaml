@@ -5,8 +5,8 @@ info:
   description: API for managing tickets and users in a ticket management system.
 
 servers:
-  - url: http://localhost:5000/api
-    description: Local server
+  - url: https://rayca-backend.vercel.app/api
+    description: server
 
 components:
   securitySchemes:
@@ -69,11 +69,11 @@ paths:
                   type: string
       responses:
         '200':
-          description: Logged in successfully
+          description: succes message with jwt token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/db/models/Users'
         '404':
           description: No user is associated with this account
         '400':
@@ -104,7 +104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/db/models/Users'
         '400':
           description: Email and password are required
         '500':
@@ -123,7 +123,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: '#/db/models/Users'
         '401':
           description: Unauthorized
         '500':
@@ -160,7 +160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/db/models/Users'
         '400':
           description: Bad request
         '401':
@@ -199,7 +199,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/db/models/Users'
         '400':
           description: Bad request
         '401':
@@ -251,7 +251,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ticket'
+                  $ref: '#/db/models/ticket'
         '401':
           description: Unauthorized
         '500':
@@ -305,7 +305,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ticket'
+                  $ref: '#/db/models/ticket'
         '401':
           description: Unauthorized
         '404':
