@@ -19,6 +19,15 @@ app.use(express.json());
 app.use(cors());
 app.use(xss());
 
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://rayca-backend.vercel.app/',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+
 app.use("/api/tickets/", auth, authRouter);
 app.use("/api/", loginAuthRouter);
 app.use("/api/", auth, isAdmin, createRouter);
