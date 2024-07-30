@@ -1,0 +1,451 @@
+openapi: 3.0.0
+info:
+  title: Ticket Management API
+  version: 1.0.0
+  description: API for managing tickets and users in a ticket management system.
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          example: abc@gmail.com
+        password:
+          type: string
+        role:
+          type: string
+          example: user
+    Ticket:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Ticket Title"
+        body:
+          type: string
+          example: "Ticket description"
+        status:
+          type: string
+          example: "open"
+        created_by:
+          type: object
+          example: 60c72b2f9b1e8a3d4c8e5a9e
+        assignedTo:
+          type: object
+          example: 60c72b2f9b1e8a3d4c8e5a9e
+
+security:
+  - BearerAuth: []
+
+paths:
+   /login:
+    post:
+      summary: logs into their account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+
+      responses:
+        '200':
+          description: logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/Users'
+        '404':
+          description: No user is associated with this account
+        '400':
+          description: invalid credentials
+        '500':
+          description: Server error
+   /register:
+    post:
+      summary: register an account
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+
+      responses:
+        '200':
+          description: registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/Users'
+        '400':
+          description: email and password is required
+        '500':
+          description: Server error
+
+  /users:
+    get:
+      summary: Get all users
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+  /users/create:
+    post:
+      summary: Create a new user
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: "password123"
+                role:
+                  type: string
+                  example: user/auth/support
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/model/Users'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+  /users/{id}:
+    patch:
+      summary: Update a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: object
+            example: 60c72b2f9b1e8a3d4c8e5a9e
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                role:
+                  type: string
+                  example: user
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+    delete:
+      summary: Delete a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60c72b2f9b1e8a3d4c8e5a9e
+      responses:
+        '200':
+          description: Deletes a user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User with ID {id} deleted"
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+
+  /tickets:
+    get:
+      summary: Get all tickets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/db/models/ticket'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+
+    post:
+      summary: Create a new ticket
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - body
+                - status
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '201':
+          description: Ticket created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/ticket'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+ 
+  /tickets/all:
+    get:
+      summary: Get all crated tickets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: responds with all tickets
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/ticket'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Ticket not found
+        '500':
+          description: Server error
+
+  /tickets/{id}:
+    get:
+      summary: Get a ticket by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60c72b2f9b1e8a3d4c8e5a9f
+      responses:
+        '200':
+          description: Ticket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/ticket'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Ticket not found
+        '500':
+          description: Server error
+
+    put:
+      summary: Update a ticket
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60c72b2f9b1e8a3d4c8e5a9f
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Updated Ticket Title"
+                body:
+                  type: string
+                  example: "Updated ticket description and details."
+                status:
+                  type: string
+                  example: "closed"
+      responses:
+        '200':
+          description: Ticket updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Ticket not found
+        '500':
+          description: Server error
+
+    delete:
+      summary: Delete a ticket
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60c72b2f9b1e8a3d4c8e5a9f
+      responses:
+        '200':
+          description: Ticket deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ticket with ID {id} deleted"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Ticket not found
+        '500':
+          description: Server error
+
+  /tickets/assign/{id}:
+    put:
+      summary: Assign a ticket to a user
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60c72b2f9b1e8a3d4c8e5a9f
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+              properties:
+                userId:
+                  type: string
+                  example: 60c72b2f9b1e8a3d4c8e5a9e
+      responses:
+        '200':
+          description: Ticket assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/db/models/ticket'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Ticket not found
+        '500':
+          description: Server error

@@ -14,14 +14,13 @@ app.use(express.static('public'))
 
 app.use(express.json())
 
-app.get('/dashboard', (req, res) => {
-    res.send("welcome to dasboard")
-})
-app.use('/tickets',auth,authRouter)
-app.use(loginAuthRouter)
-app.use(auth,isAdmin,createRouter)
+
+app.use('/api/tickets/',auth,authRouter)
+app.use('/api/',loginAuthRouter)
+app.use('/api/',auth,isAdmin,createRouter)
 
 app.listen(PORT, () => {
      connectMongoose()
 })
 
+ 

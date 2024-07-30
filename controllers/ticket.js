@@ -1,6 +1,8 @@
 const ticket = require("../db/models/ticket");
 const User = require("../db/models/Users");
 
+const sendEmailNotification = require("../email/mail");
+
 const getAllTickets = async (req, res) => {
   try {
     const tickets = await ticket.find({
@@ -32,7 +34,8 @@ const createTicket = async (req, res) => {
 
   try {
     const newTicket = await ticket.create({
-        ...req.body,created_by
+      ...req.body,
+      created_by,
     });
     res.status(201).json({ ticket: newTicket });
   } catch (error) {
@@ -44,7 +47,7 @@ const findTicket = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const tik = await ticket.findById({ _id: id});
+    const tik = await ticket.findById({ _id: id });
     if (!tik) {
       return res.status(404).json({ message: "Ticket not found" });
     }
@@ -68,8 +71,16 @@ const updateTicket = async (req, res) => {
 
     const updatedTicket = await ticket.findByIdAndUpdate(
       { _id: id, created_by: req.user.userId },
-      { body, status, title },{new:true, runValidators:true}
+      { body, status, title },
+      { new: true, runValidators: true }
     );
+    if (ticketToUpdate.status !== status) {
+      const user = await User.findById(updatedTicket.created_by);
+      const emailSubject = `Ticket Status Updated: ${title}`;
+      const emailText = `Hello, \n\nThe status of your ticket "${title}" has been updated to "${status}"`;
+
+      await sendEmailNotification(user.email, emailSubject, emailText);
+    }
 
     if (!updatedTicket) {
       return res
@@ -120,21 +131,19 @@ const assignTicket = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (req.user.role != "admin" && req.user.role != "support") {
-        return res.status(403).json({
-          message:
-            "You do not have the right authorization to complete this action",
-        });
-      }
-  
+      return res.status(403).json({
+        message:
+          "You do not have the right authorization to complete this action",
+      });
+    }
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-
-    const updatedTicket = await ticket.findByIdAndUpdate(
-      id,
-      { assignedTo: userId },
-    );
+    const updatedTicket = await ticket.findByIdAndUpdate(id, {
+      assignedTo: userId,
+    });
 
     if (!updatedTicket) {
       return res
@@ -142,12 +151,10 @@ const assignTicket = async (req, res) => {
         .json({ message: "Ticket not found or not authorized to assign" });
     }
 
-    res
-      .status(200)
-      .json({
-        updatedTicket,
-        message: `Ticket successfully assigned to user ${userId}`,
-      });
+    res.status(200).json({
+      updatedTicket,
+      message: `Ticket successfully assigned to user ${userId}`,
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to assign ticket", error });
   }

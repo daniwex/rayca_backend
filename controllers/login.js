@@ -15,16 +15,21 @@ const login = async (req, res) => {
     return res.status(404).send("invalid credentials");
   }
   const token = user.generateJWT();
-  res.status(200).json({ user: user.email, token });
+  res.status(200).json("success");
 };
 
 const register = async (req, res) => {
   const { email, password } = await req.body;
-  if(!email || !password){
-    return handleMissingFields(res, 400)
-  }  const user = await User.create({ email, password });
-  const token = user.generateJWT();
-  res.status(201).json({ user: user.email, token });
+  try {
+    if(!email || !password){
+      return handleMissingFields(res, 400)
+    }  const user = await User.create({ email, password });
+    const token = user.generateJWT();
+    res.status(200).json("registered successfully");
+  } catch (error) {
+    res.status(500).json("server error")
+  }
+
 };
 
 module.exports = {
