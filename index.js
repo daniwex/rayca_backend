@@ -5,6 +5,8 @@ const express = require('express')
 const auth = require('./middleware/auth')
 const createRouter = require('./routes/createusers')
 const isAdmin = require('./middleware/admin')
+const cors = require('cors');
+const xss = require('xss-clean')
 
 let PORT = process.env.PORT || 5000;
 
@@ -13,8 +15,8 @@ const app = express()
 app.use(express.static('public'))
 
 app.use(express.json())
-
-
+app.use(cors());
+app.use(xss())
 app.use('/api/tickets/',auth,authRouter)
 app.use('/api/',loginAuthRouter)
 app.use('/api/',auth,isAdmin,createRouter)
