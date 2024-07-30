@@ -26,10 +26,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swagger));
 
 const start = async () => {
   try {
-    await connectMongoose(process.env.MONGO_URI);
-    app.listen(PORT, () =>
-      console.log(`Server is listening on port ${PORT}...`)
-    );
+    await connectMongoose(process.env.MONGODB_URI);
+    app.listen(PORT);
   } catch (error) {
     console.log(error);
   }
