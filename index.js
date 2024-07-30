@@ -12,7 +12,7 @@ let PORT = process.env.PORT || 3000;
 
 const app = express();
 
-const swagger = yaml.load("swagger.yaml");
+const swagger = yaml.load("./swagger.yaml");
 const swaggerUI = require("swagger-ui-express");
 
 app.use(express.json());
