@@ -1,3 +1,9 @@
+const path = require('path');
+const yaml = require("yamljs");
+
+const swaggerPath = path.join(__dirname, 'swagger.yaml');
+const swagger = yaml.load(swaggerPath);
+
 const authRouter = require("./routes/ticket");
 const loginAuthRouter = require("./routes/auth");
 const connectMongoose = require("./db/connectDB");
@@ -7,12 +13,10 @@ const createRouter = require("./routes/createusers");
 const isAdmin = require("./middleware/admin");
 const cors = require("cors");
 const xss = require("xss-clean");
-const yaml = require("yamljs");
 let PORT = process.env.PORT || 3000;
 
 const app = express();
 
-const swagger = yaml.load("./swagger.yaml");
 const swaggerUI = require("swagger-ui-express");
 
 app.use(express.json());
